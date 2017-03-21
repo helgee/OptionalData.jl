@@ -1,8 +1,8 @@
 module OptionalData
 
-export OptData, push!, isavailable
+export OptData, push!, isavailable, get
 
-import Base: push!
+import Base: push!, get
 
 mutable struct OptData{T}
     data::Nullable{T}
@@ -19,6 +19,11 @@ function push!(opt::OptData{T}, args...) where T
     opt
 end
 
-isavailable(opt::OptData) = isnull(opt.data)
+function get(opt::OptData)
+    !isavailable(opt) && error("Optional data is not available.")
+    get(opt.data)
+end
+
+isavailable(opt::OptData) = !isnull(opt.data)
 
 end # module
