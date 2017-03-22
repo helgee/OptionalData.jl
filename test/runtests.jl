@@ -21,10 +21,10 @@ end
     @test string(opt) == "OptData{TestType}()"
     @test_throws ErrorException get(opt)
     push!(opt, TestType(1, 2, 3))
-    @static if VERSION > v"0.5"
-        @test string(opt) == "OptData{TestType}(TestType(1.0, 2.0, 3.0))"
-    else
+    @static if VERSION < v"0.6-"
         @test string(opt) == "OptData{TestType}(TestType(1.0,2.0,3.0))"
+    else
+        @test string(opt) == "OptData{TestType}(TestType(1.0, 2.0, 3.0))"
     end
     @test get(opt) == TestType(1, 2, 3)
     push!(opt, 1, 2, 3)
