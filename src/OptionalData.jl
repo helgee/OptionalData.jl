@@ -6,24 +6,24 @@ export @OptionalData, OptData, show, push!, isavailable, get
 
 import Base: push!, get, show
 
-mutable struct OptData{T}
+type OptData{T}
     data::Nullable{T}
     name::String
     msg::String
 end
-OptData(::Type{T}, name, msg="") where T = OptData{T}(nothing, name, msg)
+OptData{T}(::Type{T}, name, msg="") = OptData{T}(nothing, name, msg)
 
-function show(io::IO, opt::OptData{T}) where T
+function show{T}(io::IO, opt::OptData{T})
     val = isavailable(opt) ? get(opt) : ""
     print(io, "OptData{$T}($val)")
 end
 
-function push!(opt::OptData{T}, data) where T
+function push!{T}(opt::OptData{T}, data)
     opt.data = Nullable{T}(data)
     opt
 end
 
-function push!(opt::OptData{T}, args...) where T
+function push!{T}(opt::OptData{T}, args...)
     push!(opt, T(args...))
     opt
 end

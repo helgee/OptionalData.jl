@@ -1,7 +1,7 @@
 using OptionalData
 using Base.Test
 
-struct TestType
+immutable TestType
     a::Float64
     b::Float64
     c::Float64
