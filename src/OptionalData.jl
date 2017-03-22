@@ -1,14 +1,17 @@
 module OptionalData
 
-export OptData, show, push!, isavailable, get, @get
+__precompile__()
+
+export @OptionalData, OptData, show, push!, isavailable, get
 
 import Base: push!, get, show
 
 mutable struct OptData{T}
     data::Nullable{T}
-    OptData{T}() where T = new{T}(nothing)
+    name::String
+    msg::String
 end
-OptData(::Type{T}) where T = OptData{T}()
+OptData(::Type{T}, name, msg="") where T = OptData{T}(nothing, name, msg)
 
 function show(io::IO, opt::OptData{T}) where T
     val = isavailable(opt) ? get(opt) : ""
@@ -25,15 +28,13 @@ function push!(opt::OptData{T}, args...) where T
     opt
 end
 
-function get(opt::OptData, var::AbstractString="")
-    name = !isempty(var) ? var : "Optional data"
-    !isavailable(opt) && error(name, " is not available.")
+function get(opt::OptData)
+    !isavailable(opt) && error(opt.name, " is not available. ", opt.msg)
     get(opt.data)
 end
 
-macro get(sym)
-    var = string(sym)
-    :(get($(esc(sym)), $var))
+macro OptionalData(name, typ, msg="")
+   :(const $(esc(name)) = OptData($(esc(typ)), $(string(name)), $msg))
 end
 
 isavailable(opt::OptData) = !isnull(opt.data)
