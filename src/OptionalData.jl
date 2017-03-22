@@ -1,6 +1,6 @@
 module OptionalData
 
-export OptData, push!, isavailable, get
+export OptData, push!, isavailable, get, @get
 
 import Base: push!, get
 
@@ -19,9 +19,15 @@ function push!(opt::OptData{T}, args...) where T
     opt
 end
 
-function get(opt::OptData)
-    !isavailable(opt) && error("Optional data is not available.")
+function get(opt::OptData, var::AbstractString="")
+    name = !isempty(var) ? var : "Optional data"
+    !isavailable(opt) && error(name, " is not available.")
     get(opt.data)
+end
+
+macro get(sym)
+    var = string(sym)
+    :(get($(esc(sym)), $var))
 end
 
 isavailable(opt::OptData) = !isnull(opt.data)

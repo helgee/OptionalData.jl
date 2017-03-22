@@ -10,6 +10,7 @@ end
 @testset "OptionalData" begin
     opt = OptData(Symbol)
     @test_throws ErrorException get(opt)
+    @test_throws ErrorException @get(opt)
     push!(opt, :Test)
     @test get(opt) == :Test
     push!(opt, "Test")
@@ -17,6 +18,7 @@ end
 
     opt = OptData(TestType)
     @test_throws ErrorException get(opt)
+    @test_throws ErrorException @get(opt)
     push!(opt, TestType(1, 2, 3))
     @test get(opt) == TestType(1, 2, 3)
     push!(opt, 1, 2, 3)
