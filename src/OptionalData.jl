@@ -1,12 +1,18 @@
 module OptionalData
 
-export OptData, push!, isavailable, get, @get
+export OptData, show, push!, isavailable, get, @get
 
-import Base: push!, get
+import Base: push!, get, show
 
 mutable struct OptData{T}
     data::Nullable{T}
-    OptData(::Type{T}) where T = new{T}(nothing)
+    OptData{T}() where T = new{T}(nothing)
+end
+OptData(::Type{T}) where T = OptData{T}()
+
+function show(io::IO, opt::OptData{T}) where T
+    val = isavailable(opt) ? get(opt) : ""
+    print(io, "OptData{$T}($val)")
 end
 
 function push!(opt::OptData{T}, data) where T
