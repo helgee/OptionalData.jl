@@ -18,7 +18,7 @@ function show{T}(io::IO, opt::OptData{T})
     print(io, "OptData{$T}($val)")
 end
 
-function push!{T}(opt::OptData{T}, data)
+function push!{T}(opt::OptData{T}, data::T)
     opt.data = Nullable{T}(data)
     opt
 end
