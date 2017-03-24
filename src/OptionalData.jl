@@ -23,10 +23,11 @@ function push!{T}(opt::OptData{T}, data::T)
     opt
 end
 
-function push!{T}(opt::OptData{T}, args...)
+function push!{T}(opt::OptData, ::Type{T}, args...)
     push!(opt, T(args...))
     opt
 end
+push!{T}(opt::OptData{T}, args...) = push!(opt, T, args...)
 
 function get(opt::OptData)
     !isavailable(opt) && error(opt.name, " is not available. ", opt.msg)
