@@ -21,7 +21,7 @@ end
     @test string(opt) == "OptData{TestType}()"
     @test_throws ErrorException get(opt)
     push!(opt, TestType(1, 2, 3))
-    @static if VERSION < v"0.6-"
+    @static if VERSION < v"0.6.0-dev.2505" # julia PR #20288
         @test string(opt) == "OptData{TestType}(TestType(1.0,2.0,3.0))"
     else
         @test string(opt) == "OptData{TestType}(TestType(1.0, 2.0, 3.0))"
