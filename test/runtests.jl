@@ -1,32 +1,29 @@
 using OptionalData
-using Base.Test
+using Test
 
-immutable TestType
+struct TestType
     a::Float64
     b::Float64
     c::Float64
 end
 
-@testset "OptionalData" begin
-    @OptionalData opt Symbol
-    @test string(opt) == "OptData{Symbol}()"
-    @test_throws ErrorException get(opt)
-    push!(opt, :Test)
-    @test string(opt) == "OptData{Symbol}(Test)"
-    @test get(opt) == :Test
-    push!(opt, "Test")
-    @test get(opt) == :Test
+@OptionalData opt1 Symbol
+@OptionalData opt2 TestType
 
-    @OptionalData opt TestType
-    @test string(opt) == "OptData{TestType}()"
-    @test_throws ErrorException get(opt)
-    push!(opt, TestType(1, 2, 3))
-    @static if VERSION < v"0.6.0-dev.2505" # julia PR #20288
-        @test string(opt) == "OptData{TestType}(TestType(1.0,2.0,3.0))"
-    else
-        @test string(opt) == "OptData{TestType}(TestType(1.0, 2.0, 3.0))"
-    end
-    @test get(opt) == TestType(1, 2, 3)
-    push!(opt, 1, 2, 3)
-    @test get(opt) == TestType(1, 2, 3)
+@testset "OptionalData" begin
+    @test string(opt1) == "OptData{Symbol}()"
+    @test_throws ErrorException get(opt1)
+    push!(opt1, :Test)
+    @test string(opt1) == "OptData{Symbol}(Test)"
+    @test get(opt1) == :Test
+    push!(opt1, "Test")
+    @test get(opt1) == :Test
+
+    @test string(opt2) == "OptData{TestType}()"
+    @test_throws ErrorException get(opt2)
+    push!(opt2, TestType(1, 2, 3))
+    @test string(opt2) == "OptData{TestType}(TestType(1.0, 2.0, 3.0))"
+    @test get(opt2) == TestType(1, 2, 3)
+    push!(opt2, 1, 2, 3)
+    @test get(opt2) == TestType(1, 2, 3)
 end

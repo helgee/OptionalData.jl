@@ -1,43 +1,43 @@
-module OptionalData
-
 __precompile__()
+
+module OptionalData
 
 export @OptionalData, OptData, show, push!, isavailable, get
 
 import Base: push!, get, show
 
-type OptData{T}
-    data::Nullable{T}
+mutable struct OptData{T}
+    data::Union{T, Nothing}
     name::String
     msg::String
 end
-OptData{T}(::Type{T}, name, msg="") = OptData{T}(nothing, name, msg)
+OptData{T}(name, msg="") where {T} = OptData{T}(nothing, name, msg)
 
-function show{T}(io::IO, opt::OptData{T})
+function show(io::IO, opt::OptData{T}) where T
     val = isavailable(opt) ? get(opt) : ""
     print(io, "OptData{$T}($val)")
 end
 
 """
-    push!{T}(opt::OptData{T}, data::T)
+    push!(opt::OptData{T}, data::T) where T
 
 Push `data` of type `T` to `opt`.
 """
-function push!{T}(opt::OptData{T}, data::T)
-    opt.data = Nullable{T}(data)
+function push!(opt::OptData{T}, data::T) where T
+    opt.data = data
     opt
 end
 
 """
-    push!{T}(opt::OptData, ::Type{T}, args...)
+    push!(opt::OptData, ::Type{T}, args...) where T
 
 Construct an object of type `T` from `args` and push it to `opt`.
 """
-function push!{T}(opt::OptData, ::Type{T}, args...)
+function push!(opt::OptData, ::Type{T}, args...) where {T}
     push!(opt, T(args...))
     opt
 end
-push!{T}(opt::OptData{T}, args...) = push!(opt, T, args...)
+push!(opt::OptData{T}, args...) where {T} = push!(opt, T, args...)
 
 """
     get(opt::OptData)
@@ -46,7 +46,7 @@ Get data from `opt`. Throw an exception if no data has been pushed to `opt` befo
 """
 function get(opt::OptData)
     !isavailable(opt) && error(opt.name, " is not available. ", opt.msg)
-    get(opt.data)
+    opt.data
 end
 
 """
@@ -63,7 +63,7 @@ accessed before data has been pushed to it.
 ```
 """
 macro OptionalData(name, typ, msg="")
-   :(const $(esc(name)) = OptData($(esc(typ)), $(string(name)), $msg))
+   :(const $(esc(name)) = OptData{$(esc(typ))}($(string(name)), $msg))
 end
 
 """
@@ -71,6 +71,6 @@ end
 
 Check whether data has been pushed to `opt`.
 """
-isavailable(opt::OptData) = !isnull(opt.data)
+isavailable(opt::OptData) = opt.data != nothing
 
 end # module

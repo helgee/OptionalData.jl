@@ -39,7 +39,7 @@ using OptionalData
 @OptionalData OPT_FLOAT Float64 "Forgot to load it?"
 
 # this expands to
-const OPT_FLOAT = OptData(Float64, string(:OPT_FLOAT), "Forgot to load it?")
+const OPT_FLOAT = OptData{Float64}(string(:OPT_FLOAT), "Forgot to load it?")
 ```
 
 You access its value with `get` and check whether it is available with `isavailable`:
