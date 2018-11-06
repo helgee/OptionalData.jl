@@ -44,9 +44,9 @@ push!(opt::OptData{T}, args...) where {T} = push!(opt, T, args...)
 
 Get data from `opt`. Throw an exception if no data has been pushed to `opt` before.
 """
-function get(opt::OptData)
+function get(opt::OptData{T}) where T
     !isavailable(opt) && error(opt.name, " is not available. ", opt.msg)
-    opt.data
+    opt.data::T
 end
 
 """
@@ -71,6 +71,6 @@ end
 
 Check whether data has been pushed to `opt`.
 """
-isavailable(opt::OptData) = opt.data != nothing
+isavailable(opt::OptData) = opt.data !== nothing
 
 end # module
