@@ -68,7 +68,10 @@ struct NoDataError <: Exception
 end
 
 function Base.showerror(io::IO, err::NoDataError)
-    print(io, err.opt.name, " is not available. ", err.opt.msg)
+    print(io, "`", err.opt.name, "` is not available.")
+    if !isempty(err.opt.msg)
+        print(io, " ", err.opt.msg)
+    end
 end
 
 function show(io::IO, opt::OptData{T}) where T
