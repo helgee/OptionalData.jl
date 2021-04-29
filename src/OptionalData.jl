@@ -10,11 +10,11 @@ It allows you to load and access globally available data at runtime in a type-st
 *OptionalData* has the following use cases:
 
 1. Parts of your package depend on data from the internet while other parts do not.
-In the case of a network outage the package should offer a degraded experience but
-the independent parts should still function.
+   In the case of a network outage the package should offer a degraded experience but
+   the independent parts should still function.
 2. Your package requires manual initialisation steps, e.g. loading data from a
-user-supplied file, and you do not want to repeat yourself writing code that
-checks for the availability of the data.
+   user-supplied file, and you do not want to repeat yourself writing code that
+   checks for the availability of the data.
 
 You declare optional global data with the `@OptionalData` macro:
 
@@ -31,7 +31,7 @@ const OPT_FLOAT = OptData{Float64}(string(:OPT_FLOAT), "Forgot to load it?")
 You access its value with `get` and check whether it is available with `isavailable`:
 
 ```julia
-# This will throw an exception because OPT_FLOAT does not contain a value, yet.
+# This will throw a `NoDataError` because OPT_FLOAT does not contain a value, yet.
 get(OPT_FLOAT)
 # ERROR: OPT_FLOAT is not available. Forgot to load it?
 isavailable(OPT_FLOAT) == false
@@ -47,7 +47,7 @@ get(OPT_FLOAT) == 3.0
 """
 module OptionalData
 
-export @OptionalData, OptData, show, push!, isavailable, get
+export @OptionalData, OptData, NoDataError, show, push!, isavailable, get
 
 import Base: push!, get, show
 
@@ -57,6 +57,19 @@ mutable struct OptData{T}
     msg::String
 end
 OptData{T}(name, msg="") where {T} = OptData{T}(nothing, name, msg)
+
+"""
+    NoDataError(opt::OptData)
+
+`opt` does not contain data.
+"""
+struct NoDataError <: Exception
+    opt::OptData
+end
+
+function Base.showerror(io::IO, err::NoDataError)
+    print(io, err.opt.name, " is not available. ", err.opt.msg)
+end
 
 function show(io::IO, opt::OptData{T}) where T
     val = isavailable(opt) ? get(opt) : ""
@@ -90,7 +103,7 @@ push!(opt::OptData{T}, args...) where {T} = push!(opt, T, args...)
 Get data from `opt`. Throw an exception if no data has been pushed to `opt` before.
 """
 function get(opt::OptData{T}) where T
-    !isavailable(opt) && error(opt.name, " is not available. ", opt.msg)
+    !isavailable(opt) && throw(NoDataError(opt))
     opt.data::T
 end
 
@@ -108,7 +121,7 @@ accessed before data has been pushed to it.
 ```
 """
 macro OptionalData(name, typ, msg="")
-   :(const $(esc(name)) = OptData{$(esc(typ))}($(string(name)), $msg))
+    :(const $(esc(name)) = OptData{$(esc(typ))}($(string(name)), $msg))
 end
 
 """

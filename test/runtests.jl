@@ -12,7 +12,7 @@ end
 
 @testset "OptionalData" begin
     @test string(opt1) == "OptData{Symbol}()"
-    @test_throws ErrorException get(opt1)
+    @test_throws NoDataError get(opt1)
     push!(opt1, :Test)
     @test string(opt1) == "OptData{Symbol}(Test)"
     @test get(opt1) == :Test
@@ -20,7 +20,7 @@ end
     @test get(opt1) == :Test
 
     @test string(opt2) == "OptData{TestType}()"
-    @test_throws ErrorException get(opt2)
+    @test_throws NoDataError get(opt2)
     push!(opt2, TestType(1, 2, 3))
     @test string(opt2) == "OptData{TestType}(TestType(1.0, 2.0, 3.0))"
     @test get(opt2) == TestType(1, 2, 3)

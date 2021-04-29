@@ -43,7 +43,7 @@ const OPT_FLOAT = OptData{Float64}(string(:OPT_FLOAT), "Forgot to load it?")
 You access its value with `get` and check whether it is available with `isavailable`:
 
 ```julia
-# This will throw an exception because OPT_FLOAT does not contain a value, yet.
+# This will throw a `NoDataError` because OPT_FLOAT does not contain a value, yet.
 get(OPT_FLOAT)
 # ERROR: OPT_FLOAT is not available. Forgot to load it?
 isavailable(OPT_FLOAT) == false
